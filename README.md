@@ -6,9 +6,10 @@ Proyecto realizado durante el Bootcamp de Data Analysis utilizando la base de da
 
 ## 🎯 Objetivo
 
-Construir un DataFrame preparado para análisis a partir de diferentes tablas de Olist mediante **SQL, MySQL, Python, SQLAlchemy y Pandas**.
+Construir un DataFrame preparado para análisis a partir de diferentes tablas de Olist mediante **SQL, MySQL, Python, SQLAlchemy y Pandas**. 
 
 **Observación:** Hemos realizado la limpieza y transformación de tres DataFrame diferentes para la posterior elección y análisis de uno en concreto. Dichas limpiezas están adjuntadas en el repositorio, concretamente en fichero **SQL**. El DataFrame 1, actividad/clientes, ha sido el elegido para el posterior análisis.
+
 ---
 
 ## 📊 Grano del DataFrame
