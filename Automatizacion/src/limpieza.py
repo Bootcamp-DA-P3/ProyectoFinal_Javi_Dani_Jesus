@@ -18,19 +18,18 @@ def tipar_fechas(df):
     return df
 
 
-# Reglas comunes a todos los datasets.
-# En este proyecto no tenemos ninguna.
+# Reglas que se aplican a todos los datasets.
 COMUNES = []
 
 
-# Reglas específicas de cada dataset.
+# Reglas propias de cada dataset.
 LIMPIEZA = {
     "df1_actividad_clientes": [tipar_fechas],
 }
 
 
 def limpiar(df, nombre):
-    """Aplica las reglas de limpieza correspondientes al dataset."""
+    """Aplica las reglas comunes y las específicas del dataset."""
 
     for regla in COMUNES + LIMPIEZA.get(nombre, []):
         antes = len(df)
