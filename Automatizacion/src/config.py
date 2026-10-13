@@ -18,7 +18,7 @@ DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = os.getenv("DB_PORT", "3306")
 DB_NAME = os.getenv("DB_NAME", "olist")
 
-# Carpetas de trabajo
+# Carpetas de trabajop
 CARPETA_QUERIES = RAIZ / "queries"
 CARPETA_OUTPUT = RAIZ / os.getenv("OUTPUT_FOLDER", "output")
 
