@@ -78,19 +78,27 @@ COMUNES = []
 
 # Reglas propias de cada dataset.
 
+
 LIMPIEZA = {
     "df1_actividad_clientes": [
         tipar_fechas
     ],
 
-    "df2_productos": [
-        crear_df_final
-    ],
+    "df2_catalogo_productos": [],
 
-    "df3_vendedores_categorias": [
+    "df3_vendedores_productos": [
         eliminar_categorias_repetidas,
         agrupacion_categoria_vendedor,
         actualizacion_ventas_porcentajes
+    ],
+
+    "ventas_detalle": [
+        lambda df: df.assign(
+            order_purchase_timestamp=pd.to_datetime(
+                df["order_purchase_timestamp"],
+                errors="coerce"
+            )
+        )
     ]
 }
 

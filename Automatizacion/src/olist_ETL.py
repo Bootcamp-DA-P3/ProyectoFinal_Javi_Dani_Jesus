@@ -30,11 +30,11 @@ from src.config import (
 # Si la consulta devuelve mas filas que valores distintos en esa columna,
 # algun JOIN esta multiplicando y el CSV es incorrecto.
 CONSULTAS = {
-    "df1_actividad_clientes": "order_id",
-    "df2_catalogo_productos": "product_id",
-    "df3_vendedores_productos": "seller_id",
+    "df1_actividad_clientes": ["order_id"],
+    "df2_catalogo_productos": ["product_id"],
+    "df3_vendedores_productos": ["vendedor", "categoria"],
+    "ventas_detalle": ["order_id", "order_item_id"],
 }
-
 
 def crear_engine():
     """Devuelve el engine de SQLAlchemy a partir de las credenciales del .env."""
@@ -52,27 +52,39 @@ def crear_engine():
 
 
 def extraer(engine, nombre):
-    """Ejecuta queries/<nombre>.sql y devuelve el resultado como DataFrame."""
+    """Ejecuta la consulta SQL y devuelve un DataFrame."""
     ruta = CARPETA_QUERIES / f"{nombre}.sql"
+
     if not ruta.exists():
         raise FileNotFoundError(f"No existe la consulta {ruta}")
-    # El punto y coma final sobra al enviar la consulta desde Python.
+
     consulta = ruta.read_text(encoding="utf-8").strip().rstrip(";")
-    return pd.read_sql(text(consulta), engine)
 
+    print(f"Archivo SQL: {ruta}")
+    print(f"Inicio de la consulta: {consulta[:100]!r}")
 
-def comprobar_grano(df, clave, nombre):
-    """Detiene el proceso si la consulta no respeta el grano que declara."""
-    if clave not in df.columns:
-        raise KeyError(f"{nombre}: la consulta no devuelve la columna de grano '{clave}'")
+    with engine.connect() as conexion:
+        return pd.read_sql_query(text(consulta), conexion)
 
-    distintos = df[clave].nunique(dropna=False)
-    if distintos != len(df):
+def comprobar_grano(df, claves, nombre):
+    """Comprueba que las columnas declaradas identifican cada fila."""
+
+    if isinstance(claves, str):
+        claves = [claves]
+
+    for clave in claves:
+        if clave not in df.columns:
+            raise KeyError(
+                f"{nombre}: falta la columna de grano '{clave}'"
+            )
+
+    duplicados = df.duplicated(subset=claves).sum()
+
+    if duplicados > 0:
         raise ValueError(
-            f"{nombre}: {len(df)} filas para {distintos} valores distintos de '{clave}'. "
-            "Algo esta multiplicando filas: el JOIN del .sql o una regla de limpieza."
+            f"{nombre}: hay {duplicados} filas duplicadas "
+            f"para la combinación {claves}."
         )
-
 
 def exportar(df, nombre):
     """Escribe el CSV en output/ y devuelve la ruta."""
@@ -82,19 +94,34 @@ def exportar(df, nombre):
     df.to_csv(destino, index=False, encoding="utf-8-sig")
     return destino
 
-
 def ejecutar_etl():
     """Recorre todas las consultas. Devuelve {nombre: (filas, ruta del csv)}."""
     engine = crear_engine()
     resultados = {}
 
-    for nombre, clave_de_grano in CONSULTAS.items():
-        df = extraer(engine, nombre)
-        # Se comprueba dos veces a proposito: la primera senala un JOIN mal
-        # hecho en el .sql, la segunda una limpieza que duplica filas.
-        comprobar_grano(df, clave_de_grano, f"{nombre} (SQL)")
-        df = limpiar(df, nombre)
-        comprobar_grano(df, clave_de_grano, f"{nombre} (tras limpiar)")
-        resultados[nombre] = (len(df), exportar(df, nombre))
+    try:
+        for nombre, clave_de_grano in CONSULTAS.items():
+            print(f"\nEjecutando consulta: {nombre}")
 
-    return resultados
+            df = extraer(engine, nombre)
+            print(f"Consulta correcta: {len(df)} filas")
+
+            # Comprueba el grano antes de limpiar.
+            comprobar_grano(df, clave_de_grano, f"{nombre} (SQL)")
+
+            # Aplica las reglas de limpieza.
+            df = limpiar(df, nombre)
+
+            # Comprueba el grano después de limpiar.
+            comprobar_grano(df, clave_de_grano, f"{nombre} (tras limpiar)")
+
+            # Exporta el CSV.
+            destino = exportar(df, nombre)
+            resultados[nombre] = (len(df), destino)
+
+            print(f"CSV generado: {destino}")
+
+        return resultados
+
+    finally:
+        engine.dispose()

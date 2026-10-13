@@ -6,3 +6,4 @@ tzdata==2026.4
 SQLAlchemy
 mysql-connector-python
 python-dotenv
+openpyxl==3.1.5 #al crear el archivo excel.py es necesaria esta libreria
