@@ -1,136 +1,128 @@
-# Proyecto 3 - SQL y Data Analysis
 
-Proyecto realizado durante el Bootcamp de Data Analysis utilizando la base de datos **Olist**.
+# 🚀 Guía del Proyecto: Automatización MySQL → Python → Excel
 
----
+## 📝 Descripción general
 
-## 🎯 Objetivo
+Este proyecto tiene como objetivo principal transformar un flujo de análisis manual en un **pipeline automatizado de Extracción, Transformación y Carga (ETL)**. Utilizando **Python**, conectaremos una base de datos relacional **MySQL** para extraer los datasets analíticos, preprocesarlos y exportarlos en formato CSV, los cuales servirán como fuente dinámica para un **Dashboard interactivo en Microsoft Excel**.
 
-Construir un DataFrame preparado para análisis a partir de diferentes tablas de Olist mediante **SQL, MySQL, Python, SQLAlchemy y Pandas**. 
-
-**Observación:** Hemos realizado la limpieza y transformación de tres DataFrame diferentes para la posterior elección y análisis de uno en concreto. Dichas limpiezas están adjuntadas en el repositorio, concretamente en fichero **SQL**. El DataFrame 1, actividad/clientes, ha sido el elegido para el posterior análisis.
+Esta práctica representa el puente perfecto entre el análisis estático y la ingeniería de datos ligera, preparando el terreno para la migración a herramientas de Business Intelligence avanzadas.
 
 ---
 
-## 📊 Grano del DataFrame
+## 🎯 Objetivos de aprendizaje y entregables
 
-La primera decisión fue definir el **grano**, es decir, qué representa cada fila del DataFrame final.
-
-> **1 fila = 1 pedido entregado**
-
-Se utiliza `order_id` como identificador del pedido.
-
-Esta decisión es fundamental para evitar duplicaciones al combinar tablas, ya que un mismo pedido puede tener varios pagos, reseñas u otros registros asociados.
+1. **Automatizar el flujo de datos:** Reemplazar consultas manuales repetitivas por scripts ejecutables en Python.
+2. **Controlar el grano de los datos:** Evitar la duplicación y el inflado métrico (como el error común del $26\%$ en `JOINs` no agregados).
+3. **Generar una arquitectura limpia:** Organizar código, consultas SQL, datasets de salida y visualizaciones en una estructura de directorios estandarizada.
+4. **Construir un Dashboard en Excel:** Conectar los datos automatizados a tablas dinámicas, gráficos interactivos y segmentadores de datos (*slicers*).
 
 ---
 
-## 🔗 JOINs y control de duplicados
+## 🔗 Contexto y evolución (De P-III a P-V)
 
-La tabla principal es `orders`, sobre la que se incorpora información de:
+Este proyecto da continuidad al **Proyecto III** (donde se realizaban extracciones manuales y consultas estáticas) y sirve como antesala directa al **Proyecto V** (donde toda esta lógica se migrará a un modelo en estrella en Power BI con medidas DAX).
 
-- `customers`
-- `order_payments`
-- `order_reviews`
-- `geolocation`
+| Fase anterior (P-III) | Fase actual (P-IV) | Fase siguiente (P-V) |
+| :--- | :--- | :--- |
+| Extracción manual puntual | **Automatización mediante Python (`main.py`)** | Modelo relacional avanzado (Star Schema) |
+| Archivos CSV estáticos | **CSVs generados automáticamente en `output/`** | Visualización interactiva en Power BI |
+| Análisis aislado | **Dashboard operativo en Excel** | KPIs avanzados y medidas DAX |
 
-Se utilizan diferentes tipos de `JOIN` según la finalidad:
+---
 
-- **INNER JOIN:** cuando es necesaria una correspondencia entre las tablas.
-- **LEFT JOIN:** cuando se quiere conservar el pedido aunque no exista información relacionada.
+## 🗄️ Requisitos previos y Base de Datos
 
-Las tablas que pueden contener varios registros por pedido se **agrupan previamente** antes de realizar el `JOIN`.
+* **Motor de Base de Datos:** MySQL instalado localmente o accesible mediante red.
+* **Dataset:** Olist E-commerce ($99.441$ registros reales de pedidos, clientes, pagos, productos y vendedores en Brasil entre 2016 y 2018).
+* **Volcado inicial:** Si no dispones de la base de datos, puedes descargar el archivo comprimido `olist.sql.gz` desde la [carpeta de formación en Drive](https://drive.google.com/drive/folders/1apSXjn6eQ5o9RdutbD4skSjvH6ytvR06?usp=sharing).
 
-Por ejemplo, los pagos se agrupan por `order_id` para obtener un único importe total:
+---
 
-```sql
-SELECT
-    order_id,
-    SUM(payment_value) AS payment_total
-FROM order_payments
-GROUP BY order_id;
+## 🧰 Stack Tecnológico
+
+* **Lenguaje:** Python $3.x$
+* **Base de Datos:** MySQL
+* **Librerías clave:** `pandas`, `sqlalchemy`, `mysql-connector-python`, `python-dotenv`
+* **Visualización:** Microsoft Excel (`openpyxl` / Conexiones de datos)
+* **Control de versiones:** Git & GitHub
+
+---
+
+## 🏗️ Estructura del Repositorio de Trabajo
+
+El equipo debe mantener estrictamente la siguiente organización de archivos y carpetas:
+
+```text
+proyecto-olist-automation/
+│
+├── main.py                    ⭐ Script principal (Punto de entrada ETL)
+│
+├── src/                       📦 Código fuente y lógica de negocio
+│   ├── __init__.py
+│   ├── olist_ETL.py          (Extracción, transformación y exportación)
+│   └── config.py              (Carga de credenciales desde .env)
+│
+├── queries/                   📜 Consultas SQL organizadas por temática
+│   ├── clientes_actividad.sql
+│   ├── catalogo_productos.sql
+│   └── entregas_retrasos.sql
+│
+├── output/                    📂 Datasets limpios generados automáticamente (CSVs)
+│   ├── clientes_actividad.csv
+│   └── ...
+│
+├── dashboard/                 📊 Capa de visualización final
+│   └── Olist_Dashboard.xlsx   (Libro de Excel vinculado a los CSVs)
+│
+├── requirements.txt           (Dependencias de Python)
+├── .env.example               (Plantilla de configuración de entorno)
+├── .gitignore                 (Archivos excluidos de Git)
+└── README.md                  (Documentación pública del repositorio)
 ```
 
-De esta forma, al realizar el `JOIN`, no se multiplica el número de filas y se mantiene el grano:
-
-> **1 fila = 1 pedido**
-
-Este mismo principio se aplica a las reseñas y a la información de geolocalización cuando es necesario.
-
 ---
 
-## 🧹 Transformación y limpieza
+## ⚙️ Instrucciones de Puesta en Marcha
 
-Mediante SQL se realizan los filtros y transformaciones iniciales:
-
-- Selección de pedidos válidos.
-- Normalización de textos con `LOWER()` y `TRIM()`.
-- Agrupación de información.
-- Creación de variables derivadas mediante funciones como `DATEDIFF()` y `CASE WHEN`.
-
-Posteriormente, los datos se obtienen mediante **SQLAlchemy** y se cargan en **Pandas** para realizar la limpieza y validación final.
-
-### ❓ Tratamiento de valores nulos
-
-Se mantienen los valores nulos presentes en:
-
-- `review_score`
-- `latitude`
-- `longitude`
-
-No se han imputado valores artificialmente.
-
-La decisión es mantenerlos porque:
-
-- Un pedido puede no tener una reseña.
-- Puede no existir información de geolocalización para un código postal.
-- No se considera adecuado inventar información que no existe en los datos originales.
-
-Por tanto, los valores nulos se mantienen de forma justificada.
-
----
-
-## 🔍 Validación
-
-Se comprueba que el grano definido se mantiene:
-
-```python
-filas = len(df)
-
-pedidos_unicos = df["order_id"].nunique()
-
-filas == pedidos_unicos
+### Paso 1: Configurar el Entorno Virtual y Dependencias
+```bash
+python -m venv .venv
+source .venv/bin/activate  # En Windows: .venv\Scripts\activate
+pip install -r requirements.txt
 ```
 
-La validación confirma que cada pedido aparece una única vez en el DataFrame final.
+### Paso 2: Configurar las Credenciales
+Crea un archivo `.env` en la raíz del proyecto basándote en `.env.example`:
+```env
+DB_HOST=localhost
+DB_USER=tu_usuario
+DB_PASSWORD=tu_contraseña
+DB_NAME=olist
+DB_PORT=3306
+```
+
+### Paso 3: Ejecutar el Pipeline ETL
+Ejecuta el script principal para conectar a MySQL, procesar las consultas y actualizar los archivos de salida:
+```bash
+python main.py
+```
+
+### Paso 4: Refrescar el Dashboard en Excel
+Abre `dashboard/Olist_Dashboard.xlsx`, dirígete a la pestaña **Datos** de Excel y haz clic en **Actualizar todo** para volcar los nuevos datos en las tablas dinámicas y gráficos.
 
 ---
 
-## 📄 Resultado
+## ⚠️ Puntos Críticos a Evitar (Avisos Importantes)
 
-El DataFrame validado se exporta a CSV para su posterior análisis.
-
-Las credenciales de la base de datos se gestionan mediante variables de entorno y el proyecto se versiona mediante **Git y GitHub**.
+* **Cuidado con el Grano:** Validar que los `JOINs` entre tablas relacionales no multipliquen artificialmente los valores monetarios. Revisa las agregaciones antes de exportar a CSV.
+* **Seguridad de Credenciales:** Nunca subas el archivo `.env` con contraseñas reales a GitHub. Asegúrate de que figure en el `.gitignore`.
+* **Rutas relativas:** Los scripts de Python deben utilizar rutas relativas (`os.path` o `pathlib`) para garantizar que la ejecución funcione independientemente de la máquina del evaluador.
 
 ---
 
-## 📌 Resumen
+## 📋 Criterios de Evaluación
 
-El trabajo realizado en el **DataFrame 1 - Actividad de clientes** consiste en transformar varias tablas normalizadas de Olist en un único dataset preparado para análisis.
-
-La decisión principal ha sido establecer:
-
-> **Grano: 1 fila = 1 pedido entregado**
-
-Para mantener este grano se han utilizado agrupaciones de pagos, reseñas y geolocalización antes de realizar los `JOIN` correspondientes.
-
-Los **pagos se han agrupado por `order_id` y sumado** para obtener el importe total pagado por cada pedido, evitando que los diferentes pagos asociados a un mismo pedido generen varias filas. Las **reseñas se han agrupado por `order_id` calculando la puntuación media**, de forma que cada pedido aporte un único valor de valoración. Por último, la **geolocalización se ha agrupado por código postal**, calculando la latitud y longitud medias para obtener una única referencia geográfica.
-
-De esta forma, se evita que los `JOIN` multipliquen las filas y se mantiene el objetivo de que **cada fila del DataFrame represente un único pedido entregado**.
-
-Posteriormente se ha utilizado **Python, SQLAlchemy y Pandas** para ejecutar la consulta, convertir las fechas, mantener los valores nulos justificados y validar que el número de pedidos únicos coincide con el número de filas.
-
-El resultado final es un DataFrame de:
-
-> **96.469 pedidos y 15 columnas**
-
-con una estructura preparada para su posterior análisis.
+* **Automatización funcional:** El script `main.py` se ejecuta de extremo a extremo sin errores y actualiza los CSVs de la carpeta `output/`.
+* **Calidad de los datos:** Integridad del grano analítico y ausencia de duplicidades métricas.
+* **Estructura y Mantenibilidad:** Cumplimiento estricto de la arquitectura de carpetas y uso correcto de entornos virtuales.
+* **Documentación:** Un `README.md` claro que permita a cualquier compañero replicar el entorno y levantar el proyecto en menos de 5 minutos.

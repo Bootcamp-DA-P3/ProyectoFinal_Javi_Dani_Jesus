@@ -12,3 +12,4 @@ SELECT
 FROM order_items AS oi
 INNER JOIN orders AS o
     ON oi.order_id = o.order_id;
+    
