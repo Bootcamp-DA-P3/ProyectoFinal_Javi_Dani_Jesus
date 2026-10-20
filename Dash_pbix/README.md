@@ -83,7 +83,7 @@ Hemos elegido la vía **🅰️ Continuidad · Olist**: los CSV que genera el ET
 | **Excel (tablas dinámicas)** | Dashboard del Proyecto IV |
 | **Google Colab** | Exploración y apoyo |
 | **Git / GitHub** | Control de versiones y documentación |
-| **[POR COMPLETAR]** | Otras herramientas usadas |
+
 
 ---
 
