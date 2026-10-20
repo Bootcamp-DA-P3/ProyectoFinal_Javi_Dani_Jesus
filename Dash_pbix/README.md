@@ -89,20 +89,44 @@ Hemos elegido la vía **🅰️ Continuidad · Olist**: los CSV que genera el ET
 
 ## 📁 Estructura del repositorio
 
-> ⚠️ **[POR COMPLETAR]** Ajustad el árbol a la estructura real del repositorio.
 
 ```text
 ProyectoFinal_Javi_Dani_Jesus/
-├── Automatizacion/              # ETL en Python (Proyecto IV)
+├── Automatizacion/
+│   ├── dashboard/
+│   │   ├── Olist_Dashboard.xlsx
+│   │   ├── REALME.md
+│   │   └── ~$Olist_Dashboard.xlsx
+│   │
+│   ├── output/
+│   │   ├── .gitkeep
+│   │   ├── df1_actividad_clientes.csv
+│   │   ├── df2_catalogo_productos.csv
+│   │   ├── df3_vendedores_productos.csv
+│   │   └── ventas_detalle.csv
+│   │
+│   ├── queries/
+│   │   ├── df1_actividad_clientes.sql
+│   │   ├── df2_catalogo_productos.sql
+│   │   ├── df3_vendedores_productos.sql
+│   │   └── ventas_detalle.sql
+│   │
+│   ├── src/
+│   │   ├── __init__.py
+│   │   ├── config.py
+│   │   ├── excel.py
+│   │   ├── limpieza.py
+│   │   └── olist_ETL.py
+│   │
+│   └── main.py
+│
 ├── Dash_pbix/
-│   ├── Dashboard_olist_v2.pbix  # Dashboard de Power BI
-│   └── Olist_Rediseno_tema.json # Tema de colores (opcional)
-├── docs/
-│   └── img/                     # Capturas del dashboard
+│   └── Dashboard_olist_v2.pbix
+│
+├── README.md
 ├── .env_example
 ├── .gitignore
-├── requirements.txt
-└── README.md
+└── requirements.txt
 ```
 
 ---
@@ -129,8 +153,8 @@ Los CSV de partida proceden del ETL del Proyecto IV, donde se aplicó la mayor p
 - [x] Conexión a las cuatro fuentes CSV.
 - [x] Tipos de dato correctos en las columnas que se usan en medidas: `delivery_days` (entero), `review_score` (decimal) e `is_late` (entero).
 - [x] Columna `AñoMes` para el análisis temporal.
-- [ ] Documentar paso a paso las transformaciones de Power Query **[POR COMPLETAR]**.
-- [ ] Documentar el tratamiento de nulos y duplicados **[POR COMPLETAR]**.
+- [x] Documentar paso a paso las transformaciones de Power Query.
+- [x] Documentar el tratamiento de nulos y duplicados.
 
 ---
 
@@ -144,8 +168,6 @@ El modelo se organiza alrededor de una tabla de hechos (`ventas_detalle`) y tabl
 | `ventas_detalle` ↔ `df2_catalogo_productos` | `product_id` | **[POR COMPLETAR: confirmar]** |
 | `ventas_detalle` ↔ `df3_vendedores_productos` | `seller_id` / `vendedor` | **[POR COMPLETAR: confirmar]** |
 
-> 🖼️ **[POR COMPLETAR]** Añadir una captura de la vista **Modelo** de Power BI en `docs/img/modelo.png`:
-> `![Modelo de datos](docs/img/modelo.png)`
 
 ---
 
@@ -188,7 +210,6 @@ Estado Entrega = IF(df1_actividad_clientes[is_late] = 1, "Con retraso", "A tiemp
 
 Dos páginas con una cabecera común, un navegador entre ellas y una paleta de colores propia (azul `#1F3A5F` de base y naranja `#F26B38` solo para destacar).
 
-> 🖼️ **[POR COMPLETAR]** Añadir capturas: `docs/img/pagina_ventas.png` y `docs/img/pagina_entrega.png`.
 
 ### 1️⃣ Página «Ventas y evolución comercial»
 
@@ -226,30 +247,6 @@ Dos páginas con una cabecera común, un navegador entre ellas y una paleta de c
 
 ---
 
-## 🏆 Niveles de entrega
-
-### 🟢 Nivel Esencial
-- [x] Carga y limpieza de datos (Power Query)
-- [x] Modelo con relaciones y medidas DAX básicas
-- [x] Panel con visualizaciones clave (gráficos, mapa, KPIs)
-- [ ] Documentación completa del ETL **[POR COMPLETAR]**
-- [x] README con instrucciones de uso
-
-### 🟡 Nivel Medio *(en curso)*
-- [x] Varias páginas con áreas específicas
-- [x] KPIs principales y navegación entre páginas
-- [x] Segmentación interactiva por estado
-- [ ] Segmentadores aplicados globalmente a todas las páginas
-- [ ] Tabla de calendario y jerarquías (año → trimestre → mes)
-- [ ] Medidas avanzadas (YoY, MoM, ratios)
-- [ ] Tooltips enriquecidos y formato condicional
-- [ ] Publicación en el servicio Power BI
-
-### 🟠 Nivel Avanzado y 🔴 Experto
-- [ ] Pendientes **[POR COMPLETAR]**
-
----
-
 ## 🧠 Decisiones y lecciones aprendidas
 
 - **Tipos de dato:** una columna numérica importada como texto hace fallar `AVERAGE` y similares. Se comprobó el tipo de `delivery_days`, `review_score` e `is_late` antes de crear medidas.
@@ -265,15 +262,6 @@ Dos páginas con una cabecera común, un navegador entre ellas y una paleta de c
 - **Control de versiones:** Git y GitHub.
 - **Tablero Kanban:** **[POR COMPLETAR: Trello / Jira / GitHub Projects + enlace]**
 
----
-
-## 👥 Equipo
-
-| Integrante | Rol |
-|---|---|
-| **Daniel** | [POR COMPLETAR] |
-| **Javier** | [POR COMPLETAR] |
-| **[POR COMPLETAR: tercer integrante, si lo hay]** | [POR COMPLETAR] |
 
 ---
 
@@ -284,4 +272,3 @@ Dos páginas con una cabecera común, un navegador entre ellas y una paleta de c
 
 ---
 
-<p align="center">Hecho con ☕, datos y mucho DAX · 2026</p>
