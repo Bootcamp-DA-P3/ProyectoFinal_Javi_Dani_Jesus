@@ -256,9 +256,7 @@ Dos páginas con una cabecera común, un navegador entre ellas y una paleta de c
 
 ---
 
-## 📋 Gestión del proyecto
 
-- **Control de versiones:** Git y GitHub.
 
 
 
