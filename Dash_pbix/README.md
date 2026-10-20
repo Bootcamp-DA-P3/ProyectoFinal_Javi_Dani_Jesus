@@ -177,10 +177,10 @@ El modelo se organiza alrededor de una tabla de hechos (`ventas_detalle`) y tabl
 
 | Medida | Resultado | Fórmula |
 |---|---|---|
-| `Ventas de productos` | 13,59 mill. | **[POR COMPLETAR]** |
-| `Ticket medio` | 137,75 | **[POR COMPLETAR]** |
-| `Unidades vendidas` | 113 mil | **[POR COMPLETAR]** |
-| `Gastos de envio` | 2 mill. | **[POR COMPLETAR]** |
+| `Ventas de productos` | 13,59 mill. |= SUM(ventas_detalle[price]) |
+| `Ticket medio` | 137,75 |  = DIVIDE(    [Ventas de productos],    [Pedidos distintos],    0 |
+| `Unidades vendidas` | 113 mil | = COUNTROWS(ventas_detalle)|
+| `Gastos de envio` | 2 mill. | = SUM(ventas_detalle[freight_value])|
 
 ### Medidas de entrega y satisfacción *(media y varianza)*
 
