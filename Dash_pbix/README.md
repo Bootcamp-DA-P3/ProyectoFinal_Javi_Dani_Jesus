@@ -165,8 +165,7 @@ El modelo se organiza alrededor de una tabla de hechos (`ventas_detalle`) y tabl
 | Relación | Clave | Estado |
 |---|---|---|
 | `ventas_detalle` ↔ `df1_actividad_clientes` | `order_id` | ✅ Verificada (ticket medio por ciudad) |
-| `ventas_detalle` ↔ `df2_catalogo_productos` | `product_id` | **[POR COMPLETAR: confirmar]** |
-| `ventas_detalle` ↔ `df3_vendedores_productos` | `seller_id` / `vendedor` | **[POR COMPLETAR: confirmar]** |
+
 
 
 ---
